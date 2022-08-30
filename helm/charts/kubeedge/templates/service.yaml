@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: kubeedge
+    kubeedge: cloudcore
+  name: cloudcore
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.ports.cloudhub }}
+      targetPort: 10000
+      name: cloudhub
+    - port: {{ .Values.ports.cloudhub-https }}
+      targetPort: 10002
+      name: cloudhub-https
+    - port: {{ .Values.ports.cloudstream }}
+      targetPort: 10003
+      name: cloudstream
+    - port: {{ .Values.ports.tunnelport }}
+      targetPort: 10004
+      name: tunnelport
+  selector:
+    k8s-app: kubeedge
+    kubeedge: cloudcore
