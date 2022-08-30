@@ -1,0 +1,3 @@
+kubeedge:
+  enabled: true
+  namespace: kubeedge

@@ -75,7 +75,7 @@ jobs:
       - name: Run chart-testing on kubeedge helm chart (install)
         run: |-
           ct install \
-            --charts helm/charts/core/kubeedge \
+            --charts helm/charts/core/charts/kubeedge \
             --namespace kubeedge
           kubectl get -n kubeedge pods -o wide
           kubectl get -n kubeedge services
