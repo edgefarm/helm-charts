@@ -1,9 +1,9 @@
 images:
   cloudcore: kubeedge/cloudcore:1.11.1
-  iptables-manager: kubeedge/iptables-manager:v1.11.1
+  iptablesmanager: kubeedge/iptables-manager:v1.11.1
 
 ports:
   cloudhub: 10000
-  cloudhub-https: 10002
-  cloudstream: 10003
-  tunnelport: 10004
+  https: 10002
+  stream: 10003
+  tunnel: 10004

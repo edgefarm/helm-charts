@@ -32,7 +32,7 @@ spec:
       containers:
         - name: iptables-manager
           command: ["iptables-manager"]
-          image: {{ .Values.images.iptables-manager }}
+          image: {{ .Values.images.iptablesmanager }}
           imagePullPolicy: IfNotPresent
           securityContext:
             capabilities:

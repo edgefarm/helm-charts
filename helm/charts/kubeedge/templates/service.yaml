@@ -11,13 +11,13 @@ spec:
     - port: {{ .Values.ports.cloudhub }}
       targetPort: 10000
       name: cloudhub
-    - port: {{ .Values.ports.cloudhub-https }}
+    - port: {{ .Values.ports.https }}
       targetPort: 10002
       name: cloudhub-https
-    - port: {{ .Values.ports.cloudstream }}
+    - port: {{ .Values.ports.stream }}
       targetPort: 10003
       name: cloudstream
-    - port: {{ .Values.ports.tunnelport }}
+    - port: {{ .Values.ports.tunnel }}
       targetPort: 10004
       name: tunnelport
   selector:
