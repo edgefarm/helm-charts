@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ .Values.namespace }}
   labels:
     k8s-app: kubeedge
     kubeedge: cloudcore

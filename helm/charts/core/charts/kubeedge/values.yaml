@@ -7,3 +7,5 @@ ports:
   https: 10002
   stream: 10003
   tunnel: 10004
+
+namespace: kubeedge
