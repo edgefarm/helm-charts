@@ -1,2 +1,28 @@
 apiVersion: v1
-entries: {}
+entries:
+  edgefarm-core:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-08-30T15:27:02.973225881Z"
+    dependencies:
+    - condition: kubeedge.enabled
+      name: kubeedge
+      repository: file://charts/kubeedge
+      version: 0.1.0
+    description: A Helm chart for edgefarm.core
+    digest: 2ddf1ef45c1060a73c0136e04a1b0314be9fe3fe85d3b4ab19eca9ff0042f99a
+    home: http://github.com/edgefarm/helm-charts
+    keywords:
+    - edgefarm
+    - core
+    - iot
+    - kubeedge
+    - vault
+    maintainers:
+    - name: Armin Schlegel
+      url: https://github.com/siredmar
+    name: edgefarm-core
+    urls:
+    - https://github.com/edgefarm/helm-charts/releases/download/edgefarm-core-0.1.0/edgefarm-core-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-08-30T15:27:02.973235382Z"
