@@ -1,0 +1,54 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: cloud-iptables-manager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    k8s-app: iptables-manager
+    kubeedge: iptables-manager
+spec:
+  selector:
+    matchLabels:
+      k8s-app: iptables-manager
+      kubeedge: iptables-manager
+  template:
+    metadata:
+      labels:
+        k8s-app: iptables-manager
+        kubeedge: iptables-manager
+    spec:
+      serviceAccount: iptables-manager-sa
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/controlplane
+                    operator: Exists
+      restartPolicy: Always
+      containers:
+        - name: iptables-manager
+          command: ["iptables-manager"]
+          image: {{ .Values.images.iptablesmanager }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - NET_RAW
+          resources:
+            limits:
+              cpu: 200m
+              memory: 50Mi
+            requests:
+              cpu: 100m
+              memory: 25Mi
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
