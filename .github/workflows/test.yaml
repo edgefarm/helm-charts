@@ -46,13 +46,6 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.2.1
 
-      - name: Run chart-testing (lint)
-        run: |-
-          ct lint \
-            --all \
-            --chart-dirs helm/charts \
-            --validate-maintainers=false
-
       - name: Create k8s cluster
         run: |-
           sudo snap install microk8s --channel="${{ matrix.k8s }}/stable" --classic
@@ -77,8 +70,8 @@ jobs:
           sudo microk8s.kubectl -n kubeedge create secret tls kubeedge-ca --cert=rootCA.pem --key=rootCA-key.pem
           sudo microk8s.kubectl -n kubeedge create secret generic kubeedge-certs --from-file=server.crt --from-file=server.key
 
-      - name: Run chart-testing (install)
+      - name: Run chart-testing on kubeedge helm chart (install)
         run: |-
           ct install \
-            --chart-dirs helm/charts \
-            --all
+            --charts helm/charts/kubeedge \
+            --namespace kubeedge
