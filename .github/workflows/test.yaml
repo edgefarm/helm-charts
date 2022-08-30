@@ -64,12 +64,6 @@ jobs:
           sudo microk8s.config > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Run chart-testing (install)
-        run: |-
-          ct install \
-            --chart-dirs helm/charts \
-            --all
-
       - name: create kubeedge-ca
         run: |
           #!/bin/bash
@@ -79,5 +73,12 @@ jobs:
           curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64"
           chmod +x mkcert-v*-linux-amd64
           CAROOT=$(pwd) ./mkcert-v1.4.4-linux-amd64 -client -cert-file server.pem  -key-file server.key "*.nip.io" "*.kubeedge.svc.cluster.local" 
-          sudo microk8s.kubectl create secret tls kubeedge-ca --cert=kubeedge-ca.pem --key=kubeedge-ca-key.pem
-          sudo microk8s.kubectl create secret generic kubeedge-certs --from-file=server.crt --from-file=server.key
+          sudo microk8s.kubectl create namespace kubeedge 
+          sudo microk8s.kubectl -n kubeedge create secret tls kubeedge-ca --cert=kubeedge-ca.pem --key=kubeedge-ca-key.pem
+          sudo microk8s.kubectl -n kubeedge create secret generic kubeedge-certs --from-file=server.crt --from-file=server.key
+
+      - name: Run chart-testing (install)
+        run: |-
+          ct install \
+            --chart-dirs helm/charts \
+            --all
