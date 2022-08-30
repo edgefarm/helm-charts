@@ -78,5 +78,5 @@ jobs:
 
       - name: Get cluster info/nodes
         run: |
-          kubectl -n kubeedge pods -o wide
-          kubectl -n kubeedge services
+          kubectl get -n kubeedge pods -o wide
+          kubectl get -n kubeedge services
