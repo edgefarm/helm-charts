@@ -22,9 +22,12 @@ jobs:
       fail-fast: false
       matrix:
         k8s:
-          - "1.23"
-          - "1.22"
-          - "1.21"
+          - "v1.23.0"
+          - "v1.22.0"
+          - "v1.21.0"
+          # - "1.23"
+          # - "1.22"
+          # - "1.21"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,15 +50,26 @@ jobs:
         uses: helm/chart-testing-action@v2.2.1
 
       - name: Create k8s cluster
-        run: |-
-          sudo snap install microk8s --channel="${{ matrix.k8s }}/stable" --classic
-          sudo microk8s.enable dns
-          sudo microk8s.enable storage
-          sudo microk8s.kubectl wait --for=condition=ready --timeout=60s node --all
-          sudo microk8s.kubectl wait --for=condition=ready --timeout=120s --namespace=kube-system pod --all
-          mkdir -p ~/.kube
-          sudo microk8s.config > ~/.kube/config
-          chmod 600 ~/.kube/config
+        uses: helm/kind-action@v1.3.0
+        with:
+          node_image: "kindest/node:${{ matrix.k8s }}"
+          kubectl_version: "${{ matrix.k8s }}"
+
+      - name: Get cluster info/nodes
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      # - name: Create k8s cluster
+      #   run: |-
+      #     sudo snap install microk8s --channel="${{ matrix.k8s }}/stable" --classic
+      #     sudo microk8s.enable dns
+      #     sudo microk8s.enable storage
+      #     sudo microk8s.kubectl wait --for=condition=ready --timeout=60s node --all
+      #     sudo microk8s.kubectl wait --for=condition=ready --timeout=120s --namespace=kube-system pod --all
+      #     mkdir -p ~/.kube
+      #     sudo microk8s.config > ~/.kube/config
+      #     chmod 600 ~/.kube/config
 
       - name: create kubeedge-ca
         run: |
@@ -66,9 +80,12 @@ jobs:
           curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64"
           chmod +x mkcert-v*-linux-amd64
           CAROOT=$(pwd) ./mkcert-v1.4.4-linux-amd64 -client -cert-file server.crt  -key-file server.key "*.nip.io" "*.kubeedge.svc.cluster.local" 
-          sudo microk8s.kubectl create namespace kubeedge 
-          sudo microk8s.kubectl -n kubeedge create secret tls kubeedge-ca --cert=rootCA.pem --key=rootCA-key.pem
-          sudo microk8s.kubectl -n kubeedge create secret generic kubeedge-certs --from-file=server.crt --from-file=server.key
+          # sudo microk8s.kubectl create namespace kubeedge 
+          # sudo microk8s.kubectl -n kubeedge create secret tls kubeedge-ca --cert=rootCA.pem --key=rootCA-key.pem
+          # sudo microk8s.kubectl -n kubeedge create secret generic kubeedge-certs --from-file=server.crt --from-file=server.key
+          kubectl create namespace kubeedge 
+          kubectl -n kubeedge create secret tls kubeedge-ca --cert=rootCA.pem --key=rootCA-key.pem
+          kubectl -n kubeedge create secret generic kubeedge-certs --from-file=server.crt --from-file=server.key
 
       - name: Run chart-testing on kubeedge helm chart (install)
         run: |-

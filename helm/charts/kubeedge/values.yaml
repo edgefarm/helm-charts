@@ -1,5 +1,5 @@
 images:
-  cloudcore: kubeedge/cloudcore:1.11.1
+  cloudcore: kubeedge/cloudcore:v1.11.1
   iptablesmanager: kubeedge/iptables-manager:v1.11.1
 
 ports:
