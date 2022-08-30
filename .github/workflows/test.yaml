@@ -75,8 +75,5 @@ jobs:
           ct install \
             --charts helm/charts/kubeedge \
             --namespace kubeedge
-
-      - name: Get cluster info/nodes
-        run: |
           kubectl get -n kubeedge pods -o wide
           kubectl get -n kubeedge services
