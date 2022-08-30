@@ -53,38 +53,19 @@ jobs:
             --chart-dirs helm/charts \
             --validate-maintainers=false
 
-      # - name: Check nindent levels
-      #   run: |-
-      #     rc=0
-      #     for i in $(seq 2 2 20); do
-      #       if find \
-      #         helm/charts/nack \
-      #         helm/charts/nats \
-      #         helm/charts/stan \
-      #         -type f \
-      #       | xargs grep -E "^[ ]*\{[^\}]+nindent $i" \
-      #       | grep -Ev "^[^:]+:[ ]{$i}\{"; then
-      #         echo "invalid nindent $i found; nindent should match template indentation"
-      #         rc=1
-      #       fi
-      #     done
-      #     exit "$rc"
+      - name: Create k8s cluster
+        run: |-
+          sudo snap install microk8s --channel="${{ matrix.k8s }}/stable" --classic
+          sudo microk8s.enable dns
+          sudo microk8s.enable storage
+          sudo microk8s.kubectl wait --for=condition=ready --timeout=60s node --all
+          sudo microk8s.kubectl wait --for=condition=ready --timeout=120s --namespace=kube-system pod --all
+          mkdir -p ~/.kube
+          sudo microk8s.config > ~/.kube/config
+          chmod 600 ~/.kube/config
 
-      # - name: Create k8s cluster
-      #   run: |-
-      #     sudo snap install microk8s --channel="${{ matrix.k8s }}/stable" --classic
-      #     sudo microk8s.enable dns
-      #     sudo microk8s.enable storage
-      #     sudo microk8s.kubectl wait --for=condition=ready --timeout=60s node --all
-      #     sudo microk8s.kubectl wait --for=condition=ready --timeout=120s --namespace=kube-system pod --all
-      #     mkdir -p ~/.kube
-      #     sudo microk8s.config > ~/.kube/config
-      #     chmod 600 ~/.kube/config
-
-      # - name: Run chart-testing (install)
-      #   run: |-
-      #     sudo microk8s.kubectl apply -f https://raw.githubusercontent.com/nats-io/nack/main/deploy/crds.yml
-      #     ct install \
-      #       --chart-dirs helm/charts \
-      #       --all
-      #       # --excluded-charts nats-account-server,nats-kafka,nats-operator,surveyor
+      - name: Run chart-testing (install)
+        run: |-
+          ct install \
+            --chart-dirs helm/charts \
+            --all
