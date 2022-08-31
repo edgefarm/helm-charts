@@ -6,6 +6,7 @@ name: kubeedge
 keywords:
   - kubeedge
   - iot
+  - cncf
 version: 0.1.0
 home: http://github.com/edgefarm/helm-charts
 maintainers:
