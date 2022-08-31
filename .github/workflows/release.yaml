@@ -27,10 +27,19 @@ jobs:
         with:
           version: v3.8.1
 
-      - name: Run chart-releaser
+      - name: Run chart-releaser (edgefarm.*)
         uses: helm/chart-releaser-action@v1.4.0
         with:
           charts_dir: helm/charts
+          charts_repo_url: https://edgefarm.github.io/helm-charts/helm/charts
+          config: helm/cr.yaml
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Run chart-releaser (core)
+        uses: helm/chart-releaser-action@v1.4.0
+        with:
+          charts_dir: helm/charts/core
           charts_repo_url: https://edgefarm.github.io/helm-charts/helm/charts
           config: helm/cr.yaml
         env:
