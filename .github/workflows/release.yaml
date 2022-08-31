@@ -39,7 +39,7 @@ jobs:
       - name: Run chart-releaser (core)
         uses: helm/chart-releaser-action@v1.4.0
         with:
-          charts_dir: helm/charts/core
+          charts_dir: helm/charts/core/charts
           charts_repo_url: https://edgefarm.github.io/helm-charts/helm/charts
           config: helm/cr.yaml
         env:
