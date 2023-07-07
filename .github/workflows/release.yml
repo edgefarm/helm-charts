@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["Lint Commit Messages"]
+    branches:
+      - main
+      - beta
+    types:
+      - completed
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  on-success:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PACKAGES_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.PACKAGES_TOKEN }}
+
+      - name: Setup helm
+        uses: azure/setup-helm@v3
+        with:
+          version: "v3.11.1"
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.PACKAGES_TOKEN }}
+        run: |-
+          #!/bin/bash
+          set -e
+          npm install @semantic-release/exec @semantic-release/git semantic-release-helm3 -D
+          npx -c semantic-release
