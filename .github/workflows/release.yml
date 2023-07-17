@@ -44,6 +44,13 @@ jobs:
         with:
           version: "v3.11.1"
 
+      - name: "Setup yq"
+        uses: dcarbone/install-yq-action@v1.1.0
+        with:
+          version: v4.34.2
+          download-compressed: true
+          force: true
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
