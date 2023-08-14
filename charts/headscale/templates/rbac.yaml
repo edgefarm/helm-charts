@@ -1,0 +1,34 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "headscale.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "headscale.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "headscale.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "headscale.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "headscale.name" . }}
+roleRef:
+  kind: Role
+  name: {{ include "headscale.name" . }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "headscale.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "headscale.labels" . | nindent 4 }}

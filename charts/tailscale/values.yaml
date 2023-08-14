@@ -1,0 +1,41 @@
+image:
+  repository: ghcr.io/edgefarm/helm-charts/tailscale-k8s
+  pullPolicy: Always
+  tag: "1.44.0"
+
+config:
+  loginServer: http://example.com:6555
+  tunName: wt0
+  acceptDNS: false
+  authKey:
+    secret: tailscale-auth
+    secretKey: TS_AUTHKEY
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations:
+  - operator: Exists
+  - effect: NoSchedule
+    key: edgefarm.io
+    operator: Exists
+
+affinity: {}

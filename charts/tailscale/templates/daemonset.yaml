@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "tailscale.fullname" . }}
+  labels:
+    {{- include "tailscale.labels" . | nindent 4 }}
+    namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "tailscale.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tailscale.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tailscale.name" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.config.loginServer }}
+            - name: TS_LOGIN_SERVER
+              value: {{ .Values.config.loginServer }}
+            {{- end }}
+            {{- if .Values.config.tunName }}
+            - name: TS_TUN_NAME
+              value: {{ .Values.config.tunName }}
+            {{- end }}
+            {{- if .Values.config.acceptDNS }}
+            - name: TS_ACCEPT_DNS
+              value: {{ .Values.config.acceptDNS }}
+            {{- end }}
+            {{- if .Values.config.authKey }}
+            - name: TS_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.authKey.secret }}
+                  key: {{ .Values.config.authKey.secretKey }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      hostNetwork: true
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 5

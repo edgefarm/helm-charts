@@ -1,0 +1,35 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "tailscale.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tailscale.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resourceNames: ["tailscale-auth"]
+    resources: ["secrets"]
+    verbs: ["get", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "tailscale.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tailscale.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "tailscale.name" . }}
+roleRef:
+  kind: Role
+  name: {{ include "tailscale.name" . }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "tailscale.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tailscale.labels" . | nindent 4 }}

@@ -1,0 +1,84 @@
+image:
+  repository: headscale/headscale
+  pullPolicy: IfNotPresent
+  tag: "0.22.3"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+config:
+  port: 6555
+  # enable this if you want the headscale pod to be exposed on the host
+  hostPort:
+    enabled: true
+
+podAnnotations: {}
+
+defaultUser:
+  create: true
+  name: edgefarm
+  args: "--reusable -e 365d"
+
+secret:
+  create: true
+  name: tailscale-auth
+
+service:
+  create: false
+  type: ClusterIP
+  protocol: TCP
+  port: 6555
+  targetPort: 6555
+  # uncomment this if you want the headscale service port to be exposed on the host
+  # nodePort: 6555
+
+volumes:
+  runtime:
+    hostPath:
+      path: /data/headscale
+      type: DirectoryOrCreate
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  init:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  headscale:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+nodeSelector: {}
+
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Equal
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Equal
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists

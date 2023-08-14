@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "headscale.name" . }}
+  labels:
+    {{- include "headscale.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "headscale.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "headscale.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "headscale.name" . }}
+      # used to initialize the database
+      initContainers:
+        - name: init-headscale
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args: ["touch /etc/headscale/runtime/db.sqlite"]
+          volumeMounts:
+            - name: headscale-runtime
+              mountPath: /etc/headscale/runtime
+          resources:
+            {{- toYaml .Values.resources.headscale | nindent 12 }}
+      containers:
+        # used to run headscale server
+        - name: headscale
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            [
+              'headscale -c /etc/headscale/config/config.yaml serve {{- if .Values.defaultUser.create }} & while ! timeout 1 bash -c "cat < /dev/null > /dev/tcp/localhost/{{ .Values.config.port }}"; do sleep 1; done && headscale -c /etc/headscale/config/config.yaml users create {{ .Values.defaultUser.name }} && headscale -c /etc/headscale/config/config.yaml preauthkeys create {{ .Values.defaultUser.args }} -u {{ .Values.defaultUser.name }} && v=$(headscale -c /etc/headscale/config/config.yaml preauthkeys list -u {{ .Values.defaultUser.name }} -o yaml | grep key -m1 | cut -d ":" -f2 | xargs) && echo $v > /etc/headscale/runtime/preauth.token && echo "done... going to sleep" && sleep infinity{{- end }}',
+            ]
+          ports:
+            - containerPort: {{ .Values.config.port }}
+              {{- if .Values.config.hostPort.enabled }}
+              hostPort: {{ .Values.config.port }}
+              {{- end }}
+          volumeMounts:
+            - name: headscale-config
+              mountPath: /etc/headscale/config/
+            - name: headscale-runtime
+              mountPath: /etc/headscale/runtime
+          resources:
+            {{- toYaml .Values.resources.headscale | nindent 12 }}
+        {{- if .Values.secret.create }}
+        # used to store the preauth key as kubernetes secret
+        - name: headscale-secrets
+          image: bitnami/kubectl:1.22
+          command:
+            [
+              "bash",
+              "-c",
+              'while [ ! -f /etc/headscale/runtime/preauth.token ]; do sleep 1; done && kubectl create secret -n {{ .Release.Namespace }} generic {{ .Values.secret.name }} --from-literal=TS_AUTHKEY=$(cat /etc/headscale/runtime/preauth.token) --dry-run=client -o yaml | kubectl apply -f - && echo "done... going to sleep" && sleep infinity',
+            ]
+          volumeMounts:
+            - name: headscale-runtime
+              mountPath: /etc/headscale/runtime
+        {{- end }}
+      volumes:
+        - name: headscale-config
+          configMap:
+            name: {{ include "headscale.name" . }}-config
+        - name: headscale-runtime
+          {{- .Values.volumes.runtime | toYaml | nindent 10 }}
+      restartPolicy: Always
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
