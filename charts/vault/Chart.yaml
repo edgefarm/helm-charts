@@ -2,8 +2,8 @@ apiVersion: v2
 name: vault
 description: A Helm chart for vault using bank-vaults vault operator. Note that you need to have bank-vaults operator (https://bank-vaults.dev/docs/operator/) installed to be able to install this chart.
 type: application
-version: 1.2.0
-appVersion: 1.2.0
+version: 1.3.0
+appVersion: 1.3.0
 keywords:
   - edgefarm.network
   - bank-vaults
