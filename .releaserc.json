@@ -38,13 +38,21 @@
       }
     ],
     [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/kube-flannel",
+        "registry": "ghcr.io/edgefarm/helm-charts"
+      }
+    ],
+    [
       "@semantic-release/git",
       {
         "assets": [
           "charts/vault/Chart.yaml",
           "charts/vault/values.yaml",
           "charts/headscale/Chart.yaml",
-          "charts/tailscale/Chart.yaml"
+          "charts/tailscale/Chart.yaml",
+          "charts/kube-flannel/Chart.yaml"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
