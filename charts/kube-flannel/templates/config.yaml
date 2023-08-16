@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: kube-flannel-cfg
+  name: {{ include "flannel.name" . }}-cfg
   namespace: {{ .Release.Namespace }}
   labels:
     tier: node
@@ -16,7 +16,10 @@ data:
           "type": "flannel",
           "delegate": {
             "hairpinMode": true,
-            "isDefaultGateway": true
+            "isDefaultGateway": true{{- if .Values.cni.flannel.delegate.ipMasq }},{{- end }}
+            {{- if .Values.cni.flannel.delegate.ipMasq }}
+            "ipMasq": {{ .Values.cni.flannel.delegate.ipMasq }}
+            {{- end }}
           }
         },
         {

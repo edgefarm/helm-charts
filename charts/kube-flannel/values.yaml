@@ -1,10 +1,17 @@
 ---
+nameOverride: flannel
 # The IPv4 cidr pool to create on startup if none exists. Pod IPs will be
 # chosen from this range.
 podCidr: "10.244.0.0/16"
 podCidrv6: ""
 
+cni:
+  flannel:
+    delegate:
+      ipMasq: true
+
 flannel:
+  installCNI: true
   # kube-flannel image
   image:
     repository: docker.io/flannel/flannel
@@ -47,3 +54,13 @@ flannel:
   #tunnelMode: "separate"
   # Persistent keep interval to use
   #keepaliveInterval: 0
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                  - linux

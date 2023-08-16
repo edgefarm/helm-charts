@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kube-flannel-ds
+  name: {{ include "flannel.name" . }}-ds
   namespace: {{ .Release.Namespace }}
   labels:
     tier: node
@@ -17,20 +17,14 @@ spec:
         app: flannel
     spec:
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values:
-                - linux
+        {{- .Values.flannel.affinity | toYaml | nindent 8 }}
       hostNetwork: true
       priorityClassName: system-node-critical
       tolerations:
       - operator: Exists
         effect: NoSchedule
-      serviceAccountName: flannel
+      serviceAccountName: {{ include "flannel.name" . }}
+      {{- if .Values.flannel.installCNI }}
       initContainers:
       - name: install-cni-plugin
         image: {{ .Values.flannel.image_cni.repository }}:{{ .Values.flannel.image_cni.tag }}
@@ -56,6 +50,7 @@ spec:
           mountPath: /etc/cni/net.d
         - name: flannel-cfg
           mountPath: /etc/kube-flannel/
+      {{- end }}
       containers:
       - name: kube-flannel
         image: {{ .Values.flannel.image.repository }}:{{ .Values.flannel.image.tag }}
@@ -109,7 +104,7 @@ spec:
           path: /etc/cni/net.d
       - name: flannel-cfg
         configMap:
-          name: kube-flannel-cfg
+          name: {{ include "flannel.name" . }}-cfg
       - name: xtables-lock
         hostPath:
           path: /run/xtables.lock
