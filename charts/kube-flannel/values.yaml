@@ -11,7 +11,8 @@ cni:
       ipMasq: true
 
 flannel:
-  installCNI: true
+  installCNIPlugin: true
+  installCNIConfig: true
   # kube-flannel image
   image:
     repository: docker.io/flannel/flannel

@@ -24,8 +24,10 @@ spec:
       - operator: Exists
         effect: NoSchedule
       serviceAccountName: {{ include "flannel.name" . }}
-      {{- if .Values.flannel.installCNI }}
+
+      {{- if or .Values.flannel.installCNIPlugin .Values.flannel.installCNIConfig }}
       initContainers:
+      {{- if .Values.flannel.installCNIPlugin }}
       - name: install-cni-plugin
         image: {{ .Values.flannel.image_cni.repository }}:{{ .Values.flannel.image_cni.tag }}
         command:
@@ -37,7 +39,9 @@ spec:
         volumeMounts:
         - name: cni-plugin
           mountPath: /opt/cni/bin
-      - name: install-cni
+      {{- end }}
+      {{- if .Values.flannel.installCNIConfig }}
+      - name: install-cni-config
         image: {{ .Values.flannel.image.repository }}:{{ .Values.flannel.image.tag }}
         command:
         - cp
@@ -50,6 +54,7 @@ spec:
           mountPath: /etc/cni/net.d
         - name: flannel-cfg
           mountPath: /etc/kube-flannel/
+      {{- end }}
       {{- end }}
       containers:
       - name: kube-flannel
