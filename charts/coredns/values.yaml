@@ -367,13 +367,13 @@ autoscaler:
   #   imagePullPolicy: Always
 
 deployment:
-  enabled: true
+  enabled: false
   name: ""
   ## Annotations for the coredns deployment
   annotations: {}
 
 daemonset:
-  enabled: false
+  enabled: true
   name: ""
   ## Annotations for the coredns daemonset
   annotations: {}
