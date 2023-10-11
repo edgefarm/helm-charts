@@ -48,7 +48,8 @@
       "semantic-release-helm3",
       {
         "chartPath": "./charts/coredns",
-        "registry": "ghcr.io/edgefarm/helm-charts"
+        "registry": "ghcr.io/edgefarm/helm-charts",
+        "onlyUpdateVersion": true
       }
     ],
     [
