@@ -1,0 +1,18 @@
+apiVersion: v2
+appVersion: 1.11.1
+description:
+  CoreDNS (for EdgeFarm) is a DNS server that chains plugins and provides Kubernetes DNS
+  Services. Can be configured to run either as Deployment or DaemonSet.
+home: https://coredns.io
+icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
+keywords:
+  - coredns
+  - dns
+  - kubedns
+maintainers:
+  - name: siredmar
+name: coredns
+sources:
+  - https://github.com/coredns/coredns
+type: application
+version: 0.1.0
