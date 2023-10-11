@@ -7,7 +7,7 @@
 
 # EdgeFarm related base Helm charts
 
-- vault: [README.md](./vault/README.md)
+This is a collection of Helm charts that are used by EdgeFarm.
 
 # License
 
