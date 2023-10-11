@@ -4,8 +4,8 @@ description: A Helm chart for vault using bank-vaults vault operator. Note that
   you need to have bank-vaults operator (https://bank-vaults.dev/docs/operator/)
   installed to be able to install this chart.
 type: application
-version: 1.7.1
-appVersion: 1.7.1
+version: 1.7.2
+appVersion: 1.7.2
 keywords:
   - edgefarm.network
   - bank-vaults
