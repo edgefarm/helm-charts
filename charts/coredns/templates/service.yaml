@@ -1,50 +1,30 @@
-{{- if or .Values.deployment.enabled .Values.daemonset.enabled }}
----
 apiVersion: v1
 kind: Service
-metadata:
-  name: {{ default (include "coredns.fullname" .) .Values.service.name }}
-  labels: {{- include "coredns.labels" . | nindent 4 }}
-{{- if .Values.customLabels }}
-{{ toYaml .Values.customLabels | indent 4 }}
-{{- end }}
-  {{- if or .Values.service.annotations .Values.customAnnotations }}
-  annotations:
-    {{- if .Values.service.annotations }}
-    {{- toYaml .Values.service.annotations | nindent 4 }}
-    {{- end }}
-    {{- if .Values.customAnnotations }}
-    {{- toYaml .Values.customAnnotations | nindent 4 }}
-    {{- end }}
-  {{- end }}
-spec:
-  selector:
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-    {{- if .Values.isClusterService }}
-    k8s-app: {{ template "coredns.k8sapplabel" . }}
-    {{- end }}
-    app.kubernetes.io/name: {{ template "coredns.name" . }}
-  {{- if .Values.service.clusterIP }}
-  clusterIP: {{ .Values.service.clusterIP }}
-  {{- end }}
-  {{- if .Values.service.clusterIPs }}
-  clusterIPs:
-  {{ toYaml .Values.service.clusterIPs | nindent 4 }}
-  {{- end }}
-  {{- if .Values.service.externalIPs }}
-  externalIPs:
-  {{- toYaml .Values.service.externalIPs | nindent 4 }}
-  {{- end }}
-  {{- if .Values.service.externalTrafficPolicy }}
-  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
-  {{- end }}
-  {{- if .Values.service.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
-  {{- end }}
-  ports:
-{{ include "coredns.servicePorts" . | indent 2 -}}
-  type: {{ default "ClusterIP" .Values.serviceType }}
-  {{- if .Values.service.ipFamilyPolicy }}
-  ipFamilyPolicy: {{ .Values.service.ipFamilyPolicy }}
-  {{- end }}
-{{- end }}
+metadata: 
+  annotations: 
+    prometheus.io/port: "9153"
+    prometheus.io/scrape: "true"
+  labels: 
+    k8s-app: kube-dns
+    kubernetes.io/cluster-service: "true"
+    kubernetes.io/name: CoreDNS
+  name: kube-dns
+  namespace: kube-system
+spec: 
+  clusterIP: 10.96.0.10
+  clusterIPs: 
+  - 10.96.0.10
+  internalTrafficPolicy: Cluster
+  ipFamilies: 
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports: 
+  - name: dns
+    port: 53
+    protocol: UDP
+  - name: dns-tcp
+    port: 53
+  - name: metrics
+    port: 9153
+  selector: 
+    k8s-app: kube-dns
