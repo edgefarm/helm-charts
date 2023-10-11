@@ -1,4 +1,3 @@
-{{- include "coredns.checkWorkloads" . }}
 {{- if and .Values.prometheus.monitor.enabled (or .Values.deployment.enabled .Values.daemonset.enabled) }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

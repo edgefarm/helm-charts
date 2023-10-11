@@ -1,4 +1,3 @@
-{{- include "coredns.checkWorkloads" . }}
 {{- if and .Values.podDisruptionBudget (or .Values.deployment.enabled .Values.daemonset.enabled) -}}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
