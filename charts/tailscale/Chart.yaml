@@ -2,8 +2,8 @@ apiVersion: v2
 name: tailscale
 description: A Helm chart for tailscale
 type: application
-version: 1.7.2
-appVersion: 1.7.2
+version: 1.7.3
+appVersion: 1.7.3
 keywords:
   - tailscale
   - k8s
