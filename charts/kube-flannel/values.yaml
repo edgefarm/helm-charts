@@ -55,7 +55,11 @@ flannel:
   #tunnelMode: "separate"
   # Persistent keep interval to use
   #keepaliveInterval: 0
-
+  tolerations:
+    - key: edgefarm.io
+      effect: NoSchedule
+    - operator: Exists
+      effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
