@@ -5,12 +5,12 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     tier: node
-    k8s-app: kube-proxy
+    k8s-app: {{ include "kube-proxy.name" . }}
 spec:
   selector:
     matchLabels:
       tier: node
-      k8s-app: kube-proxy
+      k8s-app: {{ include "kube-proxy.name" . }}
   updateStrategy:
     rollingUpdate:
       maxSurge: 0
@@ -20,7 +20,7 @@ spec:
     metadata:
       labels:
         tier: node
-        k8s-app: kube-proxy
+        k8s-app: {{ include "kube-proxy.name" . }}
       annotations:
         kubectl.kubernetes.io/default-container: kube-proxy
         # Automatically rolls update when config changes.
