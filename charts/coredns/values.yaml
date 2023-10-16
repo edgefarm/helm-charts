@@ -11,3 +11,8 @@ tolerations:
     key: node-role.kubernetes.io/control-plane
   - key: edgefarm.io
     effect: NoSchedule
+
+features:
+  log:
+    enabled: false
+  topologyKeys: kubernetes.io/hostname
