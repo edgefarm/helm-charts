@@ -4,6 +4,7 @@ metadata:
   annotations: 
     prometheus.io/port: "9153"
     prometheus.io/scrape: "true"
+    openyurt.io/topologyKeys: {{ .Values.features.topologyKeys }}
   labels: 
     k8s-app: kube-dns
     kubernetes.io/cluster-service: "true"

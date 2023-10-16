@@ -20,7 +20,9 @@ data:
         loop
         reload
         loadbalance
-    }
+{{- if .Values.features.log.enabled}}
+        log
+{{- end }}
 kind: ConfigMap
 metadata: 
   name: coredns
