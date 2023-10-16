@@ -1,0 +1,16 @@
+image:
+  repository: openyurt/node-servant
+  tag: v1.3.4
+
+bootstrapToken:
+  create:
+    enabled: true
+    expirationSeconds: 31622400
+  secretRef:
+    # set 'name' to specify a specific name for the secret
+    # name: bootstrap-token-5qjuaz
+    # set 'generate' to true to generate a name for the secret
+    generate: true
+
+convert:
+  enabled: true

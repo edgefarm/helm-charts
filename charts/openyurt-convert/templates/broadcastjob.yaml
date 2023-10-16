@@ -1,0 +1,93 @@
+{{- if and .Values.bootstrapToken.secretRef.generate .Values.bootstrapToken.secretRef.name }}
+{{ fail "cannot set bootstrapToken.secretRef.generate and bootstrapToken.secretRef.name at the same time" }}
+{{- end }}
+
+{{- $token_id := randAlpha 6 | nospace | lower }}
+{{- $token_secret := randAlphaNum 16 | nospace }}
+
+{{- $name := "" -}}
+{{- if .Values.bootstrapToken.secretRef.generate -}}
+{{- $name = printf "bootstrap-token-%s" $token_id -}}
+{{- else -}}
+{{- $name = .Values.bootstrapToken.secretRef.name -}}
+{{- end -}}
+{{- if .Values.bootstrapToken.create.enabled }}
+apiVersion: v1
+kind: Secret
+type: bootstrap.kubernetes.io/token
+metadata:
+  name: {{ $name }}
+  namespace: kube-system
+stringData:
+  auth-extra-groups: "system:bootstrappers:kubelet-bootstrap"
+  expiration: {{ template "toRFC3339" (dict "timestamp" (add (now | unixEpoch) .Values.bootstrapToken.create.expirationSeconds)) }}
+  token-id: {{ $token_id }}
+  token-secret: {{ $token_secret }}
+  usage-bootstrap-authentication: "true"
+  usage-bootstrap-signing: "true"
+{{- end }}
+
+---
+{{if .Values.convert.enabled }}
+apiVersion: apps.kruise.io/v1alpha1
+kind: BroadcastJob
+metadata:
+  name: convert-workers-to-openyurt
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      hostPID: true
+      hostNetwork: true
+      restartPolicy: OnFailure
+      volumes:
+        - name: host-root
+          hostPath:
+            path: /
+            type: Directory
+        - name: configmap
+          configMap:
+            defaultMode: 420
+            name: yurt-static-set-yurt-hub-cloud
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/worker
+                    operator: Exists
+      containers:
+        - name: node-servant-servant
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+           - "/usr/local/bin/entry.sh convert --working-mode=cloud --yurthub-image=openyurt/yurthub:v1.3.4 --join-token=${TOKEN_ID}.${TOKEN_SECRET}"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /openyurt
+              name: host-root
+            - mountPath: /openyurt/data
+              name: configmap
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: TOKEN_ID
+              valueFrom:
+                secretKeyRef:
+                  key: token-id
+                  name: {{ $name }}
+            - name: TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: token-secret
+                  name: {{ $name }}
+  completionPolicy:
+    type: Never
+{{- end }}
