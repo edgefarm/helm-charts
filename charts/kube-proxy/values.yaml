@@ -1,0 +1,27 @@
+image:
+  repository: registry.k8s.io/kube-proxy
+  tag: v1.22.17
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+
+kuberneteServerAddr:
+  manual:
+    enabled: false
+    host: 127.0.0.1
+    port: 6443
+  lookup:
+    enabled: true
+    secretRef:
+      name: hetzner
+      namespace: kube-system
+      keys:
+        host: apiserver-host
+        port: apiserver-port
+
+features:
+  openyurt:
+    enabled: false

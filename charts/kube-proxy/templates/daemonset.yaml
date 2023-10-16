@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "kube-proxy.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    tier: node
+    k8s-app: kube-proxy
+spec:
+  selector:
+    matchLabels:
+      tier: node
+      k8s-app: kube-proxy
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        tier: node
+        k8s-app: kube-proxy
+      annotations:
+        kubectl.kubernetes.io/default-container: kube-proxy
+        # Automatically rolls update when config changes.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        {{- .Values.affinity | toYaml | nindent 8 }}
+      hostNetwork: true
+      priorityClassName: system-node-critical
+      containers:
+      - name: kube-proxy
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command:
+        - /usr/local/bin/kube-proxy
+        - --config=/var/lib/kube-proxy/config.conf
+        - --hostname-override=$(NODE_NAME)
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/lib/kube-proxy
+          name: kube-proxy
+        - mountPath: /run/xtables.lock
+          name: xtables-lock
+        - mountPath: /lib/modules
+          name: lib-modules
+          readOnly: true
+        resources: {}
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: {{ include "kube-proxy.serviceAccountName" . }}
+      serviceAccountName: {{ include "kube-proxy.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: {{ include "kube-proxy.name" . }}-cfg
+        name: kube-proxy
+      - hostPath:
+          path: /run/xtables.lock
+          type: FileOrCreate
+        name: xtables-lock
+      - hostPath:
+          path: /lib/modules
+          type: ""
+        name: lib-modules
