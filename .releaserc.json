@@ -78,7 +78,7 @@
           "charts/tailscale/Chart.yaml",
           "charts/kube-flannel/Chart.yaml",
           "charts/coredns/Chart.yaml",
-          "charts/yurthub/Chart.yaml"
+          "charts/yurthub/Chart.yaml",
           "charts/kube-proxy/Chart.yaml"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
