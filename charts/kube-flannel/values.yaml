@@ -25,6 +25,10 @@ flannel:
   command: ["/opt/bin/flanneld"]
   # command arguments
   args: ["--ip-masq", "--kube-subnet-mgr"]
+
+  extraVolumes: []
+  extraVolumeMounts: []
+
   # Backend for kube-flannel. Backend should not be changed
   # at runtime. (vxlan, host-gw, wireguard, udp)
   # Documentation at https://github.com/flannel-io/flannel/blob/master/Documentation/backends.md
