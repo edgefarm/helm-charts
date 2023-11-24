@@ -14,4 +14,4 @@ name: coredns
 sources:
   - https://github.com/coredns/coredns
 type: application
-version: 1.13.0
+version: 1.14.0
