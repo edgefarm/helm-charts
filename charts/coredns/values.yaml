@@ -1,7 +1,10 @@
+# Image configuration
 image:
   repository: registry.k8s.io/coredns/coredns
   tag: v1.8.4
 
+# Tolerations for pod assignment
+# https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 tolerations:
   - key: CriticalAddonsOnly
     operator: Exists
@@ -12,6 +15,15 @@ tolerations:
   - key: edgefarm.io
     effect: NoSchedule
 
+# Pod's DNS Policy
+# https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+dnsPolicy: ""
+
+# Pod's DNS Configuration
+# https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config
+dnsConfig: {}
+
+# Features
 features:
   log:
     enabled: false

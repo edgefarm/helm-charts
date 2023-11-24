@@ -71,7 +71,12 @@ spec:
         - mountPath: /etc/coredns
           name: config-volume
           readOnly: true
-      dnsPolicy: Default
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig: {{- toYaml .Values.dnsConfig | nindent 8 }}
+      {{- end }}
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
