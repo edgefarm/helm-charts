@@ -25,6 +25,6 @@ bootstrapFile: "/var/lib/yurthub/bootstrap-hub.conf"
 organizations: ""
 
 image:
-  registry: openyurt
+  registry: ghcr.io/openyurtio/openyurt
   repository: yurthub
-  tag: v1.3.4
+  tag: v1.4.0
