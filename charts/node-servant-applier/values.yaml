@@ -1,0 +1,14 @@
+parameters:
+  workingMode: "edge"
+  nodeServantImage: "ghcr.io/edgefarm/edgefarm/node-servant:1.4.0"
+  yurthubImage: "ghcr.io/edgefarm/edgefarm/yurthub:1.4.0"
+  enableDummyIf: true
+
+image:
+  registry: ghcr.io/edgefarm/edgefarm
+  repository: node-servant-applier
+  tag: v3
+
+tolerations:
+  - effect: NoSchedule
+    key: edgefarm.io

@@ -1,0 +1,60 @@
+apiVersion: apps.kruise.io/v1alpha1
+kind: BroadcastJob
+metadata:
+  labels:
+    job-name: node-servant-applier
+  name: node-servant-applier
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        job-name: node-servant-applier
+    spec:
+      serviceAccount: node-servant-applier
+      containers:
+      - env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+      {{- if .Values.parameters.workingMode }}
+        - name: WORKING_MODE
+          value: {{ .Values.parameters.workingMode }}
+      {{- end }}
+      {{- if .Values.parameters.nodeServantImage }}
+        - name: NODE_SERVANT_IMAGE
+          value: {{ .Values.parameters.nodeServantImage }}
+      {{- end }}
+      {{- if .Values.parameters.yurthubImage }}
+        - name: YURTHUB_IMAGE
+          value: {{ .Values.parameters.yurthubImage }}
+      {{- end }}
+      {{- if .Values.parameters.enableDummyIf }}
+        - name: ENABLE_DUMMY_IF
+          value: {{ .Values.parameters.enableDummyIf | quote }}
+      {{- end }}
+        image: {{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: IfNotPresent
+        name: node-servant-applier
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: openyurt.io/is-edge-worker
+                operator: In
+                values:
+                - "true"
+  completionPolicy:
+    type: Always
+    ttlSecondsAfterFinished: 60
+
+
+

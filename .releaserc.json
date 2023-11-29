@@ -69,6 +69,14 @@
       }
     ],
     [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/node-servant-applier",
+        "registry": "ghcr.io/edgefarm/helm-charts",
+        "onlyUpdateVersion": true
+      }
+    ],
+    [
       "@semantic-release/git",
       {
         "assets": [
@@ -79,7 +87,8 @@
           "charts/kube-flannel/Chart.yaml",
           "charts/coredns/Chart.yaml",
           "charts/yurthub/Chart.yaml",
-          "charts/kube-proxy/Chart.yaml"
+          "charts/kube-proxy/Chart.yaml",
+          "charts/node-servant-applier/Chart.yaml"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
