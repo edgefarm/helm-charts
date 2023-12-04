@@ -77,6 +77,14 @@
       }
     ],
     [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/netbird-client",
+        "registry": "ghcr.io/edgefarm/helm-charts",
+        "onlyUpdateVersion": true
+      }
+    ],
+    [
       "@semantic-release/git",
       {
         "assets": [
@@ -88,7 +96,8 @@
           "charts/coredns/Chart.yaml",
           "charts/yurthub/Chart.yaml",
           "charts/kube-proxy/Chart.yaml",
-          "charts/node-servant-applier/Chart.yaml"
+          "charts/node-servant-applier/Chart.yaml",
+          "charts/netbird-client/Chart.yaml"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }

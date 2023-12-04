@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "netbird-client.fullname" . }}
+  labels:
+    {{- include "netbird-client.labels" . | nindent 4 }}
+    namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "netbird-client.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "netbird-client.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "netbird-client.name" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NB_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            {{- if .Values.config.managementURL }}
+            - name: NB_MANAGEMENT_URL
+              value: {{ .Values.config.managementURL }}
+            {{- end }}
+            - name: NB_SETUP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.auth.secret }}
+                  key: {{ .Values.config.auth.secretKey }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      hostNetwork: true
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 5

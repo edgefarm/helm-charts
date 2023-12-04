@@ -1,0 +1,43 @@
+image:
+  repository: docker.io/netbirdio/netbird
+  pullPolicy: IfNotPresent
+  tag: "0.24.3"
+
+config:
+  managementURL: https://api.wiretrustee.com:443
+  auth:
+    secret: netbird-auth
+    secretKey: NB_SETUP_KEY
+    # set create to true, if you want to create a new secret
+    # create: true
+    # if create is true, define the setup-key here
+    # value: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations:
+  - operator: Exists
+  - effect: NoSchedule
+    key: edgefarm.io
+    operator: Exists
+
+affinity: {}

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: netbird-client
+description: A Helm chart for netbird client
+type: application
+version: 1.15.0
+appVersion: 0.24.3
+keywords:
+  - netbird
+sources:
+  - https://github.com/edgefarm/helm-charts/tree/main/build/netbird-client
+maintainers:
+  - name: Armin Schlegel
+    email: armin.schlegel@gmx.de

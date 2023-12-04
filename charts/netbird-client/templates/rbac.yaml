@@ -1,0 +1,34 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "netbird-client.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "netbird-client.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "netbird-client.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "netbird-client.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "netbird-client.name" . }}
+roleRef:
+  kind: Role
+  name: {{ include "netbird-client.name" . }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "netbird-client.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "netbird-client.labels" . | nindent 4 }}
