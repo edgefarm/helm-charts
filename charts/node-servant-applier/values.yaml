@@ -14,15 +14,17 @@ tolerations:
     key: edgefarm.io
 
 affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: openyurt.io/is-edge-worker
-              operator: In
-              values:
-                - "true"
+  {}
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #       - matchExpressions:
+  #           - key: openyurt.io/is-edge-worker
+  #             operator: In
+  #             values:
+  #               - "true"
 
 completionPolicy:
-  type: Always
-  ttlSecondsAfterFinished: 60
+  {}
+  # type: Always
+  # ttlSecondsAfterFinished: 60
