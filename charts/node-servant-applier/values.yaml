@@ -12,3 +12,17 @@ image:
 tolerations:
   - effect: NoSchedule
     key: edgefarm.io
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: openyurt.io/is-edge-worker
+              operator: In
+              values:
+                - "true"
+
+completionPolicy:
+  type: Always
+  ttlSecondsAfterFinished: 60
