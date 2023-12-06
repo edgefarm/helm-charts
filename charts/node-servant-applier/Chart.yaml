@@ -3,5 +3,5 @@ name: node-servant-applier
 description: A Helm chart for OpenYurt node-servant component. Needs OpenKruise
   to be installed.
 type: application
-version: 1.18.0
+version: 1.18.1
 appVersion: "0.1.0"
