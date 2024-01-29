@@ -42,3 +42,32 @@ subjects:
 - kind: ServiceAccount
   name: node-servant-applier
   namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-servant-applier
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - list
+  - watch
+  - get
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-servant-applier
+subjects:
+- kind: ServiceAccount
+  name: node-servant-applier
+  namespace: kube-system
+  apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: node-servant-applier
+  apiGroup: rbac.authorization.k8s.io
