@@ -7,7 +7,7 @@ parameters:
 image:
   registry: ghcr.io/edgefarm/edgefarm
   repository: node-servant-applier
-  tag: v3
+  tag: v5
 
 tolerations:
   - effect: NoSchedule
@@ -19,7 +19,6 @@ affinity:
       nodeSelectorTerms:
         - matchExpressions:
             - key: node.edgefarm.io/to-be-converted
-              operator: Exists
-
-completionPolicy:
-  type: Never
+              operator: In
+              values:
+                - "true"

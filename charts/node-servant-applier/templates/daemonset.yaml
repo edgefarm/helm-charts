@@ -1,15 +1,18 @@
-apiVersion: apps.kruise.io/v1alpha1
-kind: BroadcastJob
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
-  labels:
-    job-name: node-servant-applier
   name: node-servant-applier
+  labels:
+    app.kubernetes.io/name: node-servant-applier
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: node-servant-applier
   template:
     metadata:
       labels:
-        job-name: node-servant-applier
+        app.kubernetes.io/name: node-servant-applier
     spec:
       serviceAccount: node-servant-applier
       containers:
@@ -38,7 +41,6 @@ spec:
         image: {{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: IfNotPresent
         name: node-servant-applier
-      restartPolicy: Never
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
@@ -48,10 +50,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       
-  {{- with .Values.completionPolicy }}
-  completionPolicy:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
 
 
 
