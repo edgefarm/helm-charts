@@ -31,12 +31,18 @@ spec:
       {{- if .Values.flannel.installCNIPlugin }}
       - name: install-cni-plugin
         image: {{ .Values.flannel.image_cni.repository }}:{{ .Values.flannel.image_cni.tag }}
-        command:
-        - cp
-        args:
-        - -f
-        - /flannel
-        - /opt/cni/bin/flannel
+        {{- if .Values.flannel.image_cni.command }}
+        command: 
+        {{- range .Values.flannel.image_cni.command }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.flannel.image_cni.args }}
+        args: 
+        {{- range .Values.flannel.image_cni.args }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
         volumeMounts:
         - name: cni-plugin
           mountPath: /opt/cni/bin

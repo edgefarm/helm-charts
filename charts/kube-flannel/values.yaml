@@ -13,13 +13,17 @@ cni:
 flannel:
   installCNIPlugin: true
   installCNIConfig: true
-  # kube-flannel image
   image:
     repository: docker.io/flannel/flannel
-    tag: v0.22.1
+    tag: v0.24.2
   image_cni:
-    repository: docker.io/flannel/flannel-cni-plugin
-    tag: v1.2.0
+    repository: ghcr.io/edgefarm/edgefarm/cni-plugins
+    tag: v1
+    command:
+      - /bin/sh
+      - -c
+    args:
+      - mkdir -p /opt/cni/bin && cp /opt/cni/bin/* /opt/cni/bin && chmod +x /opt/cni/bin/*
 
   # command to execute
   command: ["/opt/bin/flanneld"]
