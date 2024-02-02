@@ -49,15 +49,13 @@ rules:
   - create
   - update
 - apiGroups:
-  - batch
+  - ""
   resources:
-  - jobs
+  - pods
   verbs:
   - list
-  - watch
   - get
-  - create
-  - update
+  - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

@@ -7,7 +7,7 @@ parameters:
 image:
   registry: ghcr.io/edgefarm/edgefarm
   repository: node-servant-applier
-  tag: v5
+  tag: v8
 
 tolerations:
   - effect: NoSchedule
