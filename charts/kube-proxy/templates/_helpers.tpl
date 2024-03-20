@@ -70,6 +70,10 @@ Create the name of the service account to use
   {{- $secretData := (get $secretObj "data") | default dict }}
   {{- $host := (get $secretData .Values.kuberneteServerAddr.lookup.secretRef.keys.host ) | b64dec }}
   {{- $port := (get $secretData .Values.kuberneteServerAddr.lookup.secretRef.keys.port ) | b64dec }}
-  {{- printf "https://%s:%s" $host $port }}
+  {{- if or (not $host) (not $port) }}
+    {{- fail "Host or port not set in the secret" }}
+  {{- else }}
+    {{- printf "https://%s:%s" $host $port }}
+  {{- end }}
 {{- end -}}
 {{- end -}}
