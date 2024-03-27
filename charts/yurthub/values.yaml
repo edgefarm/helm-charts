@@ -27,4 +27,4 @@ organizations: ""
 image:
   registry: ghcr.io/openyurtio/openyurt
   repository: yurthub
-  tag: v1.4.0
+  tag: v1.4.1
