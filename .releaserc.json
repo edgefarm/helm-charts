@@ -85,6 +85,22 @@
       }
     ],
     [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/local-path-provisioner",
+        "registry": "ghcr.io/edgefarm/helm-charts",
+        "onlyUpdateVersion": true
+      }
+    ],
+    [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/yurt-coordinator",
+        "registry": "ghcr.io/edgefarm/helm-charts",
+        "onlyUpdateVersion": true
+      }
+    ],
+    [
       "@semantic-release/git",
       {
         "assets": [
@@ -97,7 +113,9 @@
           "charts/yurthub/Chart.yaml",
           "charts/kube-proxy/Chart.yaml",
           "charts/node-servant-applier/Chart.yaml",
-          "charts/netbird-client/Chart.yaml"
+          "charts/netbird-client/Chart.yaml",
+          "charts/local-path-provisioner/Chart.yaml",
+          "charts/yurt-coordinator/Chart.yaml"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
